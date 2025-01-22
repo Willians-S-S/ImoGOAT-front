@@ -70,23 +70,26 @@ export const fetchPropertyByBairro = async (bairro, tipo) => {
             throw new Error("Nenhum dado encontrado na resposta da API.");
         }
 
-        // Filtra pelo bairro, verificando similaridade de substrings
-        let filteredProperties = response.data.filter(
-            (property) =>
-                property.bairro &&
-                isSimilarSubstring(bairro, property.bairro) // Verifica se "bairro" do usuário está na string do BD
-        );
-
-        // Filtra pelo tipo, se fornecido
-        if (tipo) {
-            filteredProperties = filteredProperties.filter(
+        if (bairro){
+            // Filtra pelo bairro, verificando similaridade de substrings
+            let filteredProperties = response.data.filter(
                 (property) =>
-                    property.type &&
-                    isSimilarSubstring(tipo, property.type) // Verifica similaridade para o tipo também
+                    property.bairro &&
+                    isSimilarSubstring(bairro, property.bairro) // Verifica se "bairro" do usuário está na string do BD
             );
+    
+            // Filtra pelo tipo, se fornecido
+            if (tipo) {
+                filteredProperties = filteredProperties.filter(
+                    (property) =>
+                        property.type &&
+                        isSimilarSubstring(tipo, property.type) // Verifica similaridade para o tipo também
+                );
+            }
+    
+            return filteredProperties; // Retorna os imóveis filtrados
         }
 
-        return filteredProperties; // Retorna os imóveis filtrados
     } catch (error) {
         console.error("Erro ao buscar os imóveis:", error);
         throw error; // Propaga o erro para ser tratado pelo chamador
@@ -96,4 +99,76 @@ export const fetchPropertyByBairro = async (bairro, tipo) => {
 
 
 
-// export const getImageImovel = async ()
+export const criarImovel = async (payload, token) => {
+    try {
+      const response = await apiClient.post("/create-immobile", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao criar imóvel:", error.response?.data || error.message);
+      throw error.response?.data || error.message;
+    }
+  };
+
+
+// Função para fazer upload das imagens
+export const adicionarImagens = async (imovelId, imagens, token) => {
+    try {
+      const formData = new FormData();
+  
+      // Adiciona as imagens ao FormData
+      for (const imagem of imagens) {
+        formData.append("img", imagem); // Certifique-se de usar "img" como no backend
+      }
+  
+      // Adiciona o ID do imóvel
+      formData.append("immobileId", String(imovelId));
+
+      console.log("formData: ", formData)
+  
+      // Verifica o conteúdo do FormData (para debug)
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
+  
+      // Faz a requisição POST com o FormData
+      const response = await apiClient.post("/create-image", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data", // O axios automaticamente lida com este cabeçalho
+        },
+      });
+  
+      console.log("Resposta do servidor:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao adicionar imagens:", error.response?.data || error.message);
+      throw new Error(error.response?.data || "Erro ao adicionar imagens.");
+    }
+  };
+  
+  
+
+
+export const getLastCreatedImmobileId = async () => {
+    try {
+      // Faz a requisição para buscar todos os imóveis
+      const response = await apiClient.get("/immobile");
+  
+      if (response.data && response.data.length > 0) {
+        // Ordena os imóveis pelo ID em ordem decrescente
+        const sortedImmobiles = response.data.sort((a, b) => b.id - a.id);
+        return sortedImmobiles[0].id; // Retorna o maior ID
+      } else {
+        console.warn("Nenhum imóvel encontrado na resposta da API.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao buscar o último imóvel criado:", error.response?.data || error.message);
+      return null; // Retorna null em caso de erro
+    }
+  };
+  
