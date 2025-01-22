@@ -1,9 +1,41 @@
-export interface PropertyForm {
-    nome: string;
-    tipo: string;
-    quartos: number;
-    banheiros: number;
-    metragem: number;
-    imagens?: File[];
-  }
-  
+export interface FormData {
+  nome: string;
+  tipo: string;
+  quartos: number;
+  banheiros: number;
+  garagem: boolean;
+  metragem: number;
+  imagens: File[];
+  descricao: string;
+  maxHospedes: number;
+  permiteFestas: boolean;
+  aceitaAnimais: boolean;
+  permiteFumar: boolean;
+  outrasRegras: string;
+  status: string;
+  valor: number;
+  frequenciaPagamento: string;
+  tarifaLimpeza: number;
+  outrasTarifas: string;
+  nomeProprietario: string;
+  contato: string;
+  cpfCnpj: string;
+  regulacoesLocais: string;
+  acessibilidade: string[];
+  politicaCancelamento: string;
+  pais: string;
+  estado: string;
+  cidade: string;
+  bairro: string;
+  rua: string;
+  numero: string;
+  complemento: string;
+  depositoSeguranca: string;
+  valorDeposito: number;
+  taxaAnimal: string;
+  taxaAnimalValor: number;
+  politicaFumantes: string;
+  politicaFestas: string;
+  taxaFestas: string;
+  outrasPoliticas: string;
+}

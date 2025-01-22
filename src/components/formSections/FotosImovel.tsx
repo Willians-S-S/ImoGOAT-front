@@ -10,10 +10,20 @@ interface FotosImovelProps {
 
 const FotosImovel: React.FC<FotosImovelProps> = ({ initialData, updateImages }) => {
   const [images, setImages] = useState<File[]>(initialData || []);
+  const [error, setError] = useState<string | null>(null);
+  const MAX_IMAGES = 5; // Limite máximo de imagens
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const uploadedImages = Array.from(event.target.files);
+      
+      // Verifica se o total de imagens excede o limite
+      if (images.length + uploadedImages.length > MAX_IMAGES) {
+        setError(`Você pode enviar no máximo ${MAX_IMAGES} imagens.`);
+        return;
+      }
+      
+      setError(null); // Limpa o erro, se houver
       const updatedImages = [...images, ...uploadedImages];
       setImages(updatedImages);
       updateImages(updatedImages); // Atualiza o estado global
@@ -33,13 +43,14 @@ const FotosImovel: React.FC<FotosImovelProps> = ({ initialData, updateImages }) 
       </label>
       <input
         id="imagens"
+        name="imagens"
         type="file"
         multiple
         accept="image/*"
         className="w-full px-4 py-2 border rounded-lg"
         onChange={handleImageUpload}
       />
-
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
       <div className="grid grid-cols-3 gap-4 mt-4">
         {images.map((image, index) => (
           <div key={index} className="relative w-full h-32 overflow-hidden rounded-lg border">
