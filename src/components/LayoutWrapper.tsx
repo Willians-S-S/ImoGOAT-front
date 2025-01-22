@@ -1,18 +1,22 @@
 "use client";
+
 import { usePathname } from "next/navigation";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Verifica se é a página de login
-  const isLoginPage = pathname === "/login";
+
+  // Verifica se a rota atual é /login ou /register
+  const isAuthPage = pathname === "/login" || pathname === "/register";
+
   return (
     <>
-      {!isLoginPage && <Header />}
-      <div className={`m-auto min-h-screen ${isLoginPage ? "w-full" : "sm:w-11/12 w-97p"}`}>
+      {!isAuthPage && <Header />}
+      <div className={`m-auto min-h-screen ${isAuthPage ? "w-full" : "sm:w-11/12 w-97p"}`}>
         {children}
       </div>
-      {!isLoginPage && <Footer />}
+      {!isAuthPage && <Footer />}
     </>
   );
 }
